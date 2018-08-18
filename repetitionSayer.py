@@ -29,9 +29,7 @@ def usage():
     print "Or, use '-l' param to list available voices"
     print
     print "Example"
-    print "     $ ./repetitionSayer.py -f file -a 2 -s 8 -d 1 -t 60"
-    print
-    print "v0.2"
+    print "     $ ./repetitionSayer.py -f file -a 2 -s 8 -t 60"
     print
 
 #----------------------------------

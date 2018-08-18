@@ -2,8 +2,6 @@
 INF="${1:-pushups}"
 #VOICEs="Sara Nora Veena"
 VOICEs="Juan Kanya Fiona"
-INOUT=1		# 1=in/out vs 0=up/down
-#INOUT=0		# 1=in/out vs 0=up/down
 ###########
 
 MIN=0.2		# sec
@@ -33,20 +31,12 @@ run_set() {
 	# end of out/down, say the 'down' statement
 	last_ln="`tail -n 2 $U | head -n 1`"	# 2nd to last line, last line is runtime it took 
 	case "$last_ln" in
-		*\ up\ *) if [ $INOUT -eq 0 ]; then
-				sleep $3; say -v $1 "down" | tee -a $U; sleep $3
-			fi;;
-		*\ in\ *) if [ $INOUT -eq 1 ]; then
-				sleep $3; say -v $1 "out" | tee -a $U; sleep $3
-			fi;;
+		*\ up\ *) sleep $3; say -v $1 "down" | tee -a $U; sleep $3
+			;;
 	esac
 
 	# count cycles from logfile
-	if [ $INOUT -eq 1 ]; then
-		echo -n " +> counted IN's: "; cat $U | grep out | wc -l 	# count 'out' because 'in' somewhere else
-	else
-		echo -n " +> counted UP's: "; cat $U | grep down | wc -l 	# same reason here
-	fi
+	echo -n " +> counted UP's: "; cat $U | grep down | wc -l 	# same reason here
 }
 #----------
 # 1 = sleep time before countdown
