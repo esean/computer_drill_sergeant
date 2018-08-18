@@ -10,4 +10,4 @@ rand,up
 rand,down
 rand,up
 rand,down
-# always end out
+# always end on down, first on up
