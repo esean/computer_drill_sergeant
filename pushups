@@ -2,12 +2,4 @@
 # first sleep, then do thing
 rand,up
 rand,down
-rand,up
-rand,down
-rand,up
-rand,down
-rand,up
-rand,down
-rand,up
-rand,down
 # always end on down, first on up
