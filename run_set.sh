@@ -1,7 +1,10 @@
 #!/bin/bash
 INF="${1:-pushups}"
 #VOICEs="Sara Nora Veena"
-VOICEs="Juan Kanya Fiona"
+#VOICEs="english-north"
+#VOICEs="Juan Kanya Fiona"
+VOICEs="cantonese aragonese georgian"
+#VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
 ###########
 
 MIN=0.2		# sec
@@ -16,6 +19,11 @@ MULT=1.25	# keeps multiplying...
 
 export PATH=$PATH:$PWD
 #----------
+_say() {
+    espeak $@
+}
+
+#----------
 # 1 = voice
 # 2 = file
 # 3 = min
@@ -26,17 +34,19 @@ U=`mktemp /tmp/tmp.XXXXXXXXXX`
 run_set() {
 	# run file and say for time
 	# log to same logfile since start so can count cycles
+	echo "repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | grep '^Total time: '"
 	repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | grep '^Total time: '
 
 	# end of out/down, say the 'down' statement
 	last_ln="`tail -n 2 $U | head -n 1`"	# 2nd to last line, last line is runtime it took 
 	case "$last_ln" in
-		*\ up\ *) sleep $3; say -v $1 "down" | tee -a $U; sleep $3
-			;;
+		*\ up\ *) sleep $3; _say -v $1 "down" | tee -a $U; sleep $3;;
+		*\ in\ *) sleep $3; _say -v $1 "out" | tee -a $U; sleep $3;;
 	esac
 
 	# count cycles from logfile
-	echo -n " +> counted UP's: "; cat $U | grep down | wc -l 	# same reason here
+	echo -n " +> counted UP's: "; cat $U | grep out | wc -l 	# same reason here
+	#echo -n " +> counted UP's: "; cat $U | grep down | wc -l 	# same reason here
 }
 #----------
 # 1 = sleep time before countdown
@@ -44,14 +54,14 @@ run_set() {
 rest_set() {
 	show_running_time
 	slp=$1; shift
-        say "$@"
-        sleep $slp
-        say "3"
-        sleep 0.5
-        say "2"
-        sleep 0.5
-        say "1"
-        sleep 0.5
+    _say "$@"
+    sleep $slp
+    _say "3"
+    sleep 0.5
+    _say "2"
+    sleep 0.5
+    _say "1"
+    sleep 0.5
 }
 #----------
 show_running_time() {
@@ -62,7 +72,7 @@ show_running_time() {
 #----------
 mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 
-say "starting"
+_say "starting"
 start_tm=`date +%s`
 sleep 3
 

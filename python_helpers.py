@@ -43,8 +43,9 @@ def get_now_datestring():
     return now.strftime("%Y-%m-%d %H:%M")
 
 #-----------------------------------
-def say_text_in_voice(message,voice,rate=200):
-    cmd = "say -r %f -v %s %s" % (rate,voice,message)
+def say_text_in_voice(message,voice,rate=150,pitch=100):
+    #cmd = "say %s" % (message)
+    cmd = "say -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
     (ret,txt) = run_subprocess(cmd)
     if ret is not 0:
         print "ERROR:say_text_in_voice(%s,%s):%s" % (message,voice,txt)

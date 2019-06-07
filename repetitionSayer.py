@@ -35,7 +35,7 @@ def usage():
 #----------------------------------
 if __name__ == '__main__':
 
-    voice = "Yuna" #"Kyoko"
+    voice = "english-north" # Yuna" #"Kyoko"
     filenm = str()
     run_sec = 0
     rand_start = 3.0
@@ -86,9 +86,10 @@ if __name__ == '__main__':
                 else:
                     sleep_time = float(row[0])
                 saytxt = str(row[1])
+                print "row=",row," say=",saytxt
 
                 time.sleep(sleep_time)
-                print "SAY:",voice,saytxt,sleep_time
+                print "SAY:v=",voice," s=",saytxt,sleep_time
                 ph.say_text_in_voice(saytxt,voice)
                     
                 # need to run file in entirety, then check for timeout

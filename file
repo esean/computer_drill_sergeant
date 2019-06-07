@@ -1,0 +1,9 @@
+# COMMENTS are stripped
+# first sleep, then do thing
+rand,in
+randsmall,out
+rand,in
+randsmall,out
+randsmall,in
+randsmall,out
+# always end on down, first on up
