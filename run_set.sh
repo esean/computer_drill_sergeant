@@ -3,7 +3,8 @@ INF="${1:-pushups}"
 #VOICEs="Sara Nora Veena"
 #VOICEs="english-north"
 #VOICEs="Juan Kanya Fiona"
-VOICEs="cantonese aragonese georgian"
+#VOICEs="cantonese aragonese georgian"
+VOICEs="bosnian czech danish"
 #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
 ###########
 
@@ -20,7 +21,10 @@ MULT=1.25	# keeps multiplying...
 export PATH=$PATH:$PWD
 #----------
 _say() {
-    echo "$@" | espeak
+    case X"$1" in
+        X-v) shift; voice="$1"; shift; echo "$@" | espeak -v $voice;;
+        *) echo "$@" | espeak;;
+    esac
 }
 
 #----------
@@ -73,6 +77,9 @@ show_running_time() {
 mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 
 _say "starting"
+for voice in $VOICEs; do
+    _say -v $voice "hi"
+done
 start_tm=`date +%s`
 sleep 3
 
