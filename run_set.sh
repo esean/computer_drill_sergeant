@@ -20,7 +20,7 @@ MULT=1.25	# keeps multiplying...
 export PATH=$PATH:$PWD
 #----------
 _say() {
-    espeak $@
+    echo "$@" | espeak
 }
 
 #----------
