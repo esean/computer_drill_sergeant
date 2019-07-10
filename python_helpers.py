@@ -9,6 +9,7 @@ import datetime
 # uncomment to debug in gdb-style debugger
 #import pdb
 #pdb.set_trace()
+import platform
 
 DEBUG = 0
 
@@ -43,9 +44,19 @@ def get_now_datestring():
     return now.strftime("%Y-%m-%d %H:%M")
 
 #-----------------------------------
+def is_linux():
+    if "Linux" in platform.system():
+        return True
+    else:
+        return False
+
+#-----------------------------------
 def say_text_in_voice(message,voice,rate=150,pitch=100):
     #cmd = "say %s" % (message)
-    cmd = "say -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
+    if is_linux():
+        cmd = "say -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
+    else:
+        cmd = "say -v %s %s" % (voice,message)
     (ret,txt) = run_subprocess(cmd)
     if ret is not 0:
         print "ERROR:say_text_in_voice(%s,%s):%s" % (message,voice,txt)

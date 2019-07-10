@@ -1,20 +1,28 @@
 #!/bin/bash
 INF="${1:-pushups}"
-#VOICEs="Sara Nora Veena"
-#VOICEs="english-north"
-#VOICEs="Juan Kanya Fiona"
-#VOICEs="cantonese aragonese georgian"
-VOICEs="english malay english-north" #bosnian czech danish"
-#VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
-###########
 
+is_linux=0
+case X"$OSTYPE" in
+    X*linux*)  is_linux=1;;
+esac
+
+if [ $is_linux -eq 0 ]; then
+    #VOICEs="Sara Nora Veena"
+    #VOICEs="english-north"
+    VOICEs="Juan Kanya Fiona"
+else
+    #VOICEs="cantonese aragonese georgian"
+    VOICEs="english malay english-north" #bosnian czech danish"
+    #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
+fi
+
+###########
 MIN=0.2		# sec
 MAX=1.0		# sec
 #MIN=0.35		# sec
 #MAX=1.1		# sec
 dur=8		# init, sec
 MULT=1.25	# keeps multiplying...
-
 ###########
 
 
@@ -25,7 +33,11 @@ _say() {
     case X"$1" in
         X-v) shift; voice="$1"; shift; opt="-v $voice";; 
     esac
-    echo "$@" | espeak $opt
+    if [ $is_linux -eq 1 ]; then
+        echo "$@" | espeak $opt
+    else
+        say $opt "$@"
+    fi
 }
 
 #----------
