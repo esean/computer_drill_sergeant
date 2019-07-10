@@ -4,7 +4,7 @@ INF="${1:-pushups}"
 #VOICEs="english-north"
 #VOICEs="Juan Kanya Fiona"
 #VOICEs="cantonese aragonese georgian"
-VOICEs="bosnian czech danish"
+VOICEs="english malay english-north" #bosnian czech danish"
 #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
 ###########
 
@@ -21,10 +21,11 @@ MULT=1.25	# keeps multiplying...
 export PATH=$PATH:$PWD
 #----------
 _say() {
+    opt=''
     case X"$1" in
-        X-v) shift; voice="$1"; shift; echo "$@" | espeak -v $voice;;
-        *) echo "$@" | espeak;;
+        X-v) shift; voice="$1"; shift; opt="-v $voice";; 
     esac
+    echo "$@" | espeak $opt
 }
 
 #----------
@@ -38,7 +39,7 @@ U=`mktemp /tmp/tmp.XXXXXXXXXX`
 run_set() {
 	# run file and say for time
 	# log to same logfile since start so can count cycles
-	echo "repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | grep '^Total time: '"
+	#echo "repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | grep '^Total time: '"
 	repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | grep '^Total time: '
 
 	# end of out/down, say the 'down' statement
@@ -53,18 +54,20 @@ run_set() {
 	#echo -n " +> counted UP's: "; cat $U | grep down | wc -l 	# same reason here
 }
 #----------
-# 1 = sleep time before countdown
-# 2 = phrase to say
+# 1 = voice
+# 2 = sleep time before countdown
+# 3 = phrase to say
 rest_set() {
+    v="$1"; shift
 	show_running_time
 	slp=$1; shift
-    _say "$@"
+    _say -v $v "$@"
     sleep $slp
-    _say "3"
+    _say -v $v "3"
     sleep 0.5
-    _say "2"
+    _say -v $v "2"
     sleep 0.5
-    _say "1"
+    _say -v $v "1"
     sleep 0.5
 }
 #----------
@@ -81,7 +84,7 @@ for voice in $VOICEs; do
     _say -v $voice "hi"
 done
 start_tm=`date +%s`
-sleep 3
+sleep 2
 
 while :; do
 	
@@ -94,6 +97,10 @@ while :; do
 	MIN="`echo "$MIN*$MULT" | bc -l | mk_float`"
 	MAX="`echo "$MAX*$MULT" | bc -l | mk_float`"
 
-	rest_set 2 "now rest"
+    # just use first voice
+	for voice in $VOICEs; do
+	    rest_set $voice 2 "now rest"
+        break
+    done
 done
 
