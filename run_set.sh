@@ -90,9 +90,10 @@ run_set() {
             ;;
     esac
 
-    _say -v $1 "completed $latest_cnt sets"
+    _say -v $1 "$latest_cnt sets" &
+    sleep 0.1
 
-    # update 'done' file
+    # TASK DONE: update 'done' file
     echo "($voice) RUN_SET() TASK DONE" | tee /tmp/done_file-$voice
 }
 #----------
@@ -109,7 +110,7 @@ rest_set() {
     sleep 0.5
     _say -v $v "2"
     sleep 0.5
-    _say -v $v "1"
+    _say -v $v "1" &
     sleep 0.5
 
     # update 'done' file
@@ -125,6 +126,8 @@ show_running_time() {
 }
 #----------
 mk_float () { awk '{printf("%0.25f\n",$1)}'; }
+
+[ ! -f $INF ] && die "Cannot find input file:$INF"
 
 _say "starting"
 for voice in $VOICEs; do

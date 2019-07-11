@@ -3,9 +3,7 @@
 randsmall,in
 rand,out
 randsmall,in
-rand,out
-randsmall,in
 randsmall,out
-randsmall,in
+rand,in
 randsmall,out
 # always end on down, first on up
