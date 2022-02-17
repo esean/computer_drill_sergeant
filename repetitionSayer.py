@@ -60,7 +60,7 @@ if __name__ == '__main__':
         elif option in ('-s', '--rand-time-stop'):
             rand_stop = float(argument)
         elif option in ('-l', '--list-voices'):
-            cmd = "say -v ?"
+            cmd = "espeak -v ?"
             (ret,txt) = ph.run_subprocess(cmd)
             print txt
             sys.exit(0)

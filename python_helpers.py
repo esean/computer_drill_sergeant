@@ -53,10 +53,12 @@ def is_linux():
 #-----------------------------------
 def say_text_in_voice(message,voice,rate=150,pitch=100):
     #cmd = "say %s" % (message)
+    print "%s" % message
     if is_linux():
-        cmd = "say -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
+        #cmd = "espeak -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
+        cmd = "espeak -v %s -p %f %s" % (voice,pitch,message)
     else:
-        cmd = "say -v %s %s" % (voice,message)
+        cmd = "espeak -v %s %s" % (voice,message)
     (ret,txt) = run_subprocess(cmd)
     if ret is not 0:
         print "ERROR:say_text_in_voice(%s,%s):%s" % (message,voice,txt)
