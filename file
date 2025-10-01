@@ -1,9 +1,11 @@
 # COMMENTS are stripped
 # first sleep, then do thing
+randsmall,in!
+rand,out!
 randsmall,in
-rand,out
-randsmall,in
-randsmall,out
-rand,in
-randsmall,out
+randsmall,wait
+randsmall,Out
+rand,In!
+randsmall,WAIT...
+randsmall,YANK IT OUT?
 # always end on down, first on up

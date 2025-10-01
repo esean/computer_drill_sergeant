@@ -54,9 +54,19 @@ def is_linux():
 def say_text_in_voice(message,voice,rate=150,pitch=100):
     #cmd = "say %s" % (message)
     print "%s" % message
+    amp=80
+    cap=20
+    spd=160
+    pth=10
+    if '!' in message:
+        amp=250
+        cap=50
+    if '?' in message:
+        spd=250
+        pth=30
     if is_linux():
         #cmd = "espeak -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
-        cmd = "espeak -v %s -p %f %s" % (voice,pitch,message)
+        cmd = "echo \"%s\" | espeak -v %s -p %f -k%d -p %d -z -s %d" % (message,voice,pitch,cap,pth,spd)
     else:
         cmd = "espeak -v %s %s" % (voice,message)
     (ret,txt) = run_subprocess(cmd)

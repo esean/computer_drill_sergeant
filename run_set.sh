@@ -1,5 +1,5 @@
 #!/bin/bash
-INF="${1:-pushups}"
+INF="${1:-file}"
 
 ###########
 MIN=0.2		# sec
@@ -24,7 +24,9 @@ if [ $is_linux -eq 0 ]; then
     VOICEs="Sara Nora Veena"
     #VOICEs="Juan Kanya Fiona"
 else
-    VOICEs="brazil icelandic female4"
+    #VOICEs="brazil icelandic female4"
+    #VOICEs="brazil female2 icelandic female4 male4"
+    VOICEs="en+f4 mb-en1 en+f5 en+m3"
     #VOICEs="cantonese aragonese georgian"
     #VOICEs="english malay english-north" #bosnian czech danish"
     #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
@@ -38,7 +40,7 @@ _say() {
     esac
     #echo "[$voice] $@"
     if [ $is_linux -eq 1 ]; then
-        echo "$@" | espeak $opt
+        echo "$@" | espeak $opt -k20 -p 10 -z
     else
         echo "$@" | espeak $opt
         #say $opt "$@"
@@ -135,7 +137,7 @@ mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 _say "starting"
 for voice in $VOICEs; do
     _say -v "$voice" "hi" &
-    sleep 0.1
+    sleep 0.3
 done
 start_tm=`date +%s`
 sleep 2
@@ -170,7 +172,7 @@ while :; do
 
 	for voice in $VOICEs; do
         rm -f /tmp/done_file-${voice}
-	    rest_set "$voice" 2 "now rest" &
+	    rest_set "$voice" 2 "Now rest" &
     done
     wait_for_all_voices_to_complete $VOICEs
 
