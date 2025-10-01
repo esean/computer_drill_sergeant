@@ -7,5 +7,5 @@ randsmall,wait
 randsmall,Out
 rand,In!
 randsmall,WAIT...
-randsmall,YANK IT OUT?
+randsmall,Yank it Out?
 # always end on down, first on up
