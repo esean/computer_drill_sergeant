@@ -8,10 +8,12 @@ randsmall,Out
 rand,In!
 randsmall,WAIT...
 randsmall,Yank it Out?
-randsmall,now whip it around
-randsmall,yeah keep doing that
-randsmall,in and out
+randsmall,Whip it around?
+randsmall,yeah Tug it around
+randsmall,in out
 randsmall,deeper
 randsmall,hold
-randsmall,Yank it Out?
+randsmall,Wrench it Out?
+randsmall,Whip? it around
+randsmall,Wrench it Out?
 # always end on down, first on up
