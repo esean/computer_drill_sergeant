@@ -24,9 +24,10 @@ if [ $is_linux -eq 0 ]; then
     VOICEs="Sara Nora Veena"
     #VOICEs="Juan Kanya Fiona"
 else
-    #VOICEs="brazil icelandic female4"
+    VOICEs="female2 female4 en-m1"
     #VOICEs="brazil female2 icelandic female4 male4"
-    VOICEs="en+f4 mb-en1 en+f5 en+m3"
+    #VOICEs="en+f4 mb-en1 en+f5 en+m3"
+
     #VOICEs="cantonese aragonese georgian"
     #VOICEs="english malay english-north" #bosnian czech danish"
     #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
@@ -134,9 +135,31 @@ mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 
 [ ! -f $INF ] && die "Cannot find input file:$INF"
 
-_say "starting"
+random_flip() # returns either 0 or 1
+{
+    randval=$RANDOM
+    if [ $randval -gt 16384 ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+_say "Welcome everyone"
 for voice in $VOICEs; do
-    _say -v "$voice" "hi" &
+    if `random_flip`; then
+        if `random_flip`; then
+            _say -v "$voice" "hi" &
+        else
+            _say -v "$voice" "bonjour" &
+        fi
+    else
+        if `random_flip`; then
+            _say -v "$voice" "hello" &
+        else
+            _say -v "$voice" "good day" &
+        fi
+    fi
     sleep 0.3
 done
 start_tm=`date +%s`
@@ -172,7 +195,7 @@ while :; do
 
 	for voice in $VOICEs; do
         rm -f /tmp/done_file-${voice}
-	    rest_set "$voice" 2 "Now rest" &
+	    rest_set "$voice" 2 "Now tug it Out and Rest!" &
     done
     wait_for_all_voices_to_complete $VOICEs
 
