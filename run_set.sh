@@ -24,7 +24,7 @@ if [ $is_linux -eq 0 ]; then
     VOICEs="Sara Nora Veena"
     #VOICEs="Juan Kanya Fiona"
 else
-    VOICEs="female2 female4 en-m1"
+    VOICEs="brazil female2 female4 en-m1"
     #VOICEs="brazil female2 icelandic female4 male4"
     #VOICEs="en+f4 mb-en1 en+f5 en+m3"
 
@@ -145,7 +145,14 @@ random_flip() # returns either 0 or 1
     fi
 }
 
-_say "Welcome everyone"
+if [ ! -z "$2" ]; then
+    shift
+    msg="$@"
+    _say -v en-m1 "hello, $msg"
+    exit 0
+fi
+
+_say "Welcome everyone, please find your seats"
 for voice in $VOICEs; do
     if `random_flip`; then
         if `random_flip`; then
@@ -195,7 +202,7 @@ while :; do
 
 	for voice in $VOICEs; do
         rm -f /tmp/done_file-${voice}
-	    rest_set "$voice" 2 "Now tug it Out and Rest!" &
+	    rest_set "$voice" 2 "Now rip it Out and Rest!" &
     done
     wait_for_all_voices_to_complete $VOICEs
 
