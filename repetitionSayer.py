@@ -14,10 +14,11 @@ import random
 #----------------------------------
 def usage():
     print
-    print "%s -v [voice] -f [program file to run] {-g [second file]} {-t [run X seconds]} {-r}" % os.path.basename(sys.argv[0])
+    print "%s -v [voice] -f [program file to run] {-g [second file]} {-w [second voice]} {-t [run X seconds]} {-r}" % os.path.basename(sys.argv[0])
     print
     print "Runs [program file] line-by-line and either sleeps, or says something"
     print "If a second file is provided with -g, alternates between the two files"
+    print "If a second voice is provided with -w, uses it for the second file"
     print
     print "   # COMMENTS ignored"
     print "   0,hi1"
@@ -29,17 +30,20 @@ def usage():
     print "opt.param [-a,-s] set [rand_start,stop]"
     print "Or, use '-l' param to list available voices"
     print "Or, use '-r' param to read lines randomly instead of sequentially"
+    print "Or, use '-w' param to specify a second voice for the second file"
     print
     print "Example"
     print "     $ ./repetitionSayer.py -f file -a 2 -s 8 -t 60"
     print "     $ ./repetitionSayer.py -f file1 -g file2 -a 2 -s 8 -t 60"
     print "     $ ./repetitionSayer.py -f file -r -a 2 -s 8 -t 60"
+    print "     $ ./repetitionSayer.py -f file1 -g file2 -v Sara -w Daniel -t 60"
     print
 
 #----------------------------------
 if __name__ == '__main__':
 
     voice = "english-north" # Yuna" #"Kyoko"
+    voice2 = str()  # Second voice for second file
     filenm = str()
     filenm2 = str()  # Second file name
     run_sec = 0
@@ -48,7 +52,7 @@ if __name__ == '__main__':
     random_mode = False  # Flag for random line reading
     
     try:
-        opts, args = go.getopt(sys.argv[1:], "hv:f:g:t:a:s:lr", ["help", "voice=", "program_script_filename=", "second-file=", "run_sec=", "rand-time-start=", "rand-time-stop=", "list-voices", "random" ])
+        opts, args = go.getopt(sys.argv[1:], "hv:w:f:g:t:a:s:lr", ["help", "voice=", "second-voice=", "program_script_filename=", "second-file=", "run_sec=", "rand-time-start=", "rand-time-stop=", "list-voices", "random" ])
     except go.GetoptError as message:
         sys.exit("Error:%s" % message)
     for option, argument in opts:
@@ -57,6 +61,8 @@ if __name__ == '__main__':
             sys.exit(0)
         elif option in ('-v', '--voice'):
             voice = str(argument)
+        elif option in ('-w', '--second-voice'):
+            voice2 = str(argument)
         elif option in ('-f', '--program_script_filename'):
             filenm = str(argument)
         elif option in ('-g', '--second-file'):
@@ -77,6 +83,15 @@ if __name__ == '__main__':
     if not voice or not filenm:
         usage()
         ph.die("Incorrect params")
+    
+    # If second file is provided but no second voice, use the first voice
+    if filenm2 and not voice2:
+        voice2 = voice
+    
+    # Print voice configuration
+    print "Using voice:", voice, "for file:", filenm
+    if filenm2:
+        print "Using voice:", voice2, "for file:", filenm2
 
     starttime = datetime.now()
     
@@ -137,7 +152,7 @@ if __name__ == '__main__':
                 
                 # Process lines alternating between files
                 for i in range(max_lines):
-                    # Process line from file1 if available
+                    # Process line from file1 if available (using first voice)
                     if i < len(lines1):
                         if process_line(lines1[i], voice, rand_start, rand_stop):
                             elap = datetime.now()-starttime
@@ -145,9 +160,9 @@ if __name__ == '__main__':
                                 print "Total time:",elap,"seconds"
                                 sys.exit(0)
                     
-                    # Process line from file2 if available
+                    # Process line from file2 if available (using second voice)
                     if i < len(lines2):
-                        if process_line(lines2[i], voice, rand_start, rand_stop):
+                        if process_line(lines2[i], voice2, rand_start, rand_stop):
                             elap = datetime.now()-starttime
                             if run_sec > 0 and elap.total_seconds() >= run_sec:
                                 print "Total time:",elap,"seconds"

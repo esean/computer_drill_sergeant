@@ -1,7 +1,19 @@
 #!/bin/bash
 rand=''
 case X"$1" in
-    X|X-h|X--help|X--h)  echo "USAGE: $0 {[-r]} [file] {[2nd file]}"; echo " -r   Read lines randomly from files"; exit 0;;
+    X|X-h|X--help|X--h)  
+        echo "USAGE: $0 {[-r]} [file] {[2nd file]}"
+        echo " -r   Read lines randomly from files"
+        echo ""
+        echo "Environment variables:"
+        echo " SECOND_VOICES   List of voices to use for 2nd file (space-separated)"
+        echo "                 Example: SECOND_VOICES='Daniel Juan' $0 file1 file2"
+        echo ""
+        echo "When using two files:"
+        echo " - Each primary voice is paired with a secondary voice"
+        echo " - If fewer secondary voices than primary, they cycle"
+        echo " - Example: Primary='A B C', Secondary='X Y' gives pairs: A-X, B-Y, C-X"
+        exit 0;;
     X-r)    rand='-r '; shift;;
     X-*)    echo "ERROR: unknown $1"; exit 1;;
 esac
@@ -32,14 +44,23 @@ if [ $is_linux -eq 0 ]; then
     VOICEs="Sara Nora Veena"
     #VOICEs="Juan Kanya Fiona"
 else
-    #VOICEs="brazil female2 female4 en-m1"
-    VOICEs="female2 en-m1"
+    VOICEs="brazil female2 female4 en-m1"
     #VOICEs="brazil female2 icelandic female4 male4"
     #VOICEs="en+f4 mb-en1 en+f5 en+m3"
 
     #VOICEs="cantonese aragonese georgian"
     #VOICEs="english malay english-north" #bosnian czech danish"
     #VOICEs="afrikaans aragonese bulgarian bosnian catalan czech welsh danish german greek default english en-scottish english-north english_rp english_wmids english-us en-westindies esperanto spanish spanish-latin-am estonian persian persian-pinglish finnish french-Belgium french irish-gaeilge greek-ancient hindi croatian hungarian armenian armenian-west indonesian icelandic italian lojban georgian kannada kurdish latin lingua_franca_nova lithuanian latvian macedonian malayalam malay nepali dutch norwegian punjabi polish brazil portugal romanian russian slovak albanian serbian swedish swahili-test tamil turkish vietnam vietnam_hue vietnam_sgn Mandarin cantonese"
+fi
+
+# If SECOND_VOICES is not set, use default secondary voices
+if [ -z "$SECOND_VOICES" ]; then
+    # Default: use different voices from primary list, or same if not enough
+    if [ $is_linux -eq 0 ]; then
+        SECOND_VOICES="Daniel Juan Karen"
+    else
+        SECOND_VOICES="female5 male2 en+f3"
+    fi
 fi
 
 #----------
@@ -63,17 +84,25 @@ vlog() { echo "[$voice]:$@"; }
 # 3 = min
 # 4 = max
 # 5 = duration
+# 6 = second voice (optional)
 # always ends on out/down
 ALL=/tmp/sss.all
 run_set() {
     voice="$1"
     U=/tmp/$voice
+    second_voice="$6"  # Optional second voice parameter
 
 	# run file and say for time
 	# log to same logfile since start so can count cycles
 	# If INF2 is provided, pass it with -g option
 	if [ -n "$INF2" ]; then
-		repetitionSayer.py -v $1 $rand -f $2 -g "$INF2" -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+		if [ -n "$second_voice" ]; then
+			# Use second voice if provided
+			repetitionSayer.py -v $1 $rand -f $2 -g "$INF2" -w "$second_voice" -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+		else
+			# No second voice specified
+			repetitionSayer.py -v $1 $rand -f $2 -g "$INF2" -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+		fi
 	else
 		repetitionSayer.py -v $1 $rand -f $2 -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
 	fi
@@ -150,6 +179,14 @@ mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 [ ! -f $INF ] && die "Cannot find input file:$INF"
 [ -n "$INF2" ] && [ ! -f "$INF2" ] && die "Cannot find second input file:$INF2"
 
+# Show voice configuration if using two files
+if [ -n "$INF2" ]; then
+    echo "=== Voice Configuration ==="
+    echo "Primary voices: $VOICEs"
+    echo "Secondary voices: $SECOND_VOICES"
+    echo "=========================="
+fi
+
 random_flip() # returns either 0 or 1
 {
     randval=$RANDOM
@@ -169,7 +206,7 @@ if [ ! -z "$2" ] && [ ! -f "$2" ]; then
     exit 0
 fi
 
-_say "Welcome everyone, please find your seats"
+_say "Welcome everyone, please find your places"
 for voice in $VOICEs; do
     if `random_flip`; then
         if `random_flip`; then
@@ -207,9 +244,18 @@ done
 
 while :; do
 	
-    for voice in $VOICEs; do
+    # Convert SECOND_VOICES to array for easier access
+    second_voices_array=($SECOND_VOICES)
+    voices_array=($VOICEs)
+    
+    for i in "${!voices_array[@]}"; do
+        voice="${voices_array[$i]}"
+        # Get corresponding second voice (cycle through if fewer second voices than primary)
+        second_voice_index=$((i % ${#second_voices_array[@]}))
+        second_voice="${second_voices_array[$second_voice_index]}"
+        
     #    rm -f /tmp/done_file-${voice}
-        run_set "$voice" $INF $MIN $MAX $dur
+        run_set "$voice" $INF $MIN $MAX $dur "$second_voice"
 	done
     #wait_for_all_voices_to_complete $VOICEs
 
