@@ -206,7 +206,7 @@ if [ ! -z "$2" ] && [ ! -f "$2" ]; then
     exit 0
 fi
 
-_say "Welcome everyone, please find your places"
+_say "Welcome everyone, please find a seat"
 for voice in $VOICEs; do
     if `random_flip`; then
         if `random_flip`; then

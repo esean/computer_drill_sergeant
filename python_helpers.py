@@ -52,23 +52,102 @@ def is_linux():
 
 #-----------------------------------
 def say_text_in_voice(message,voice,rate=150,pitch=100):
+    """
+    Enhanced text-to-speech function with dynamic emphasis based on punctuation and text patterns.
+    
+    Features:
+    - Progressive emphasis for multiple exclamation marks (!, !!, !!!, etc.)
+    - Different handling for questions (?, ??, ???)
+    - Special effects for interrobang (!? or ?!)
+    - ALL CAPS word detection for emphasis
+    - Ellipsis (...) for dramatic pauses
+    - Dash pauses ( - or -- )
+    - Repeated letter detection (Noooo!)
+    - Dramatic keyword emphasis
+    """
     #cmd = "say %s" % (message)
     print "%s" % message
-    amp=80
-    cap=20
-    spd=160
-    pth=10
-    if '!' in message:
-        amp=250
-        cap=50
+    
+    # Base parameters
+    amp = 100      # Amplitude (volume) - increased base from 80
+    cap = 20       # Capital letter emphasis
+    spd = 160      # Speed (words per minute)
+    pth = 50       # Pitch - default pitch
+    gap = 0        # Gap between words (ms)
+    
+    # Count exclamation marks for progressive emphasis
+    exclamation_count = message.count('!')
+    if exclamation_count > 0:
+        # Progressive emphasis based on number of exclamations
+        amp = min(200 + (exclamation_count * 30), 500)  # Max amplitude 500
+        cap = min(30 + (exclamation_count * 15), 100)   # Max capital emphasis 100
+        pth = min(50 + (exclamation_count * 10), 99)    # Max pitch 99
+        gap = min(exclamation_count * 10, 50)           # Add dramatic pauses
+        
+    # Handle questions with emphasis
     if '?' in message:
-        spd=250
-        pth=30
+        spd = 140 if exclamation_count == 0 else 120   # Slower for questions
+        pth = min(pth + 20, 99)                         # Higher pitch for questions
+        
+    # Special handling for interrobang (!? or ?!)
+    if ('!?' in message or '?!' in message):
+        amp = min(amp + 50, 500)
+        spd = 130
+        gap = max(gap, 20)
+        
+    # Detect ALL CAPS words for extra emphasis
+    words = message.split()
+    caps_words = [w for w in words if w.isupper() and len(w) > 1]
+    if caps_words:
+        cap = min(cap + (len(caps_words) * 10), 100)
+        amp = min(amp + 20, 500)
+        
+    # Handle ellipsis for dramatic effect
+    if '...' in message:
+        gap = max(gap, 15)  # Add pauses for ellipsis
+        spd = max(spd - 20, 100)  # Slow down for dramatic effect
+    
+    # Handle multiple question marks for extra confusion/urgency
+    question_count = message.count('?')
+    if question_count > 1:
+        pth = min(pth + (question_count * 5), 99)
+        spd = max(spd - (question_count * 10), 100)
+        
+    # Handle dashes for dramatic pauses
+    if ' - ' in message or ' -- ' in message:
+        gap = max(gap, 25)
+        
+    # Detect repeated letters for emphasis (e.g., "Noooo!")
+    repeated_pattern = re.findall(r'(\w)\1{2,}', message.lower())
+    if repeated_pattern:
+        spd = max(spd - 30, 80)  # Slow down for repeated letters
+        amp = min(amp + 30, 500)  # Increase volume
+        
+    # Special dramatic keywords
+    dramatic_words = ['wait', 'stop', 'no', 'yes', 'help', 'now', 'quick', 'hurry']
+    message_lower = message.lower()
+    for word in dramatic_words:
+        if word in message_lower:
+            amp = min(amp + 10, 500)
+            break
+    
+    # Escape the message for shell safety
+    escaped_message = message.replace('"', '\\"').replace('$', '\\$').replace('`', '\\`')
+    
     if is_linux():
-        #cmd = "espeak -r %f -v %s -p %f %s" % (rate,voice,pitch,message)
-        cmd = "echo \"%s\" | espeak -v %s -p %f -k%d -p %d -z -s %d" % (message,voice,pitch,cap,pth,spd)
+        # Enhanced espeak command with all parameters
+        # -a: amplitude (volume)
+        # -s: speed in words per minute  
+        # -p: pitch (0-99)
+        # -k: capital letter emphasis
+        # -g: gap between words in ms
+        # -z: remove trailing silence
+        cmd = "echo \"%s\" | espeak -v %s -a %d -s %d -p %d -k%d -g %d -z" % (
+            escaped_message, voice, amp, spd, pth, cap, gap)
     else:
-        cmd = "espeak -v %s %s" % (voice,message)
+        # For non-Linux, include amplitude and speed
+        cmd = "espeak -v %s -a %d -s %d -p %d \"%s\"" % (voice, amp, spd, pth, escaped_message)
+    
     (ret,txt) = run_subprocess(cmd)
     if ret is not 0:
         print "ERROR:say_text_in_voice(%s,%s):%s" % (message,voice,txt)
