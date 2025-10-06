@@ -1,0 +1,12 @@
+# COMMENTS are stripped
+# first sleep, then do thing
+rand,out!
+randsmall,wait
+randsmall,Out
+randsmall,Out?
+randsmall,WAIT...
+randsmall,Yank it Out?
+randsmall,hold
+randsmall,Wrench it Out?
+randsmall,Rip it Out?
+# always end on down, first on up

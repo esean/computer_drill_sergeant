@@ -1,5 +1,13 @@
 #!/bin/bash
+rand=''
+case X"$1" in
+    X|X-h|X--help|X--h)  echo "USAGE: $0 {[-r]} [file] {[2nd file]}"; echo " -r   Read lines randomly from files"; exit 0;;
+    X-r)    rand='-r '; shift;;
+    X-*)    echo "ERROR: unknown $1"; exit 1;;
+esac
+
 INF="${1:-file}"
+INF2="${2:-}"  # Second file is optional
 
 ###########
 MIN=0.2		# sec
@@ -24,7 +32,8 @@ if [ $is_linux -eq 0 ]; then
     VOICEs="Sara Nora Veena"
     #VOICEs="Juan Kanya Fiona"
 else
-    VOICEs="brazil female2 female4 en-m1"
+    #VOICEs="brazil female2 female4 en-m1"
+    VOICEs="female2 en-m1"
     #VOICEs="brazil female2 icelandic female4 male4"
     #VOICEs="en+f4 mb-en1 en+f5 en+m3"
 
@@ -62,7 +71,12 @@ run_set() {
 
 	# run file and say for time
 	# log to same logfile since start so can count cycles
-	repetitionSayer.py -v $1 -f $2 -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+	# If INF2 is provided, pass it with -g option
+	if [ -n "$INF2" ]; then
+		repetitionSayer.py -v $1 $rand -f $2 -g "$INF2" -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+	else
+		repetitionSayer.py -v $1 $rand -f $2 -a $3 -s $4 -t $5 | tee -a $U | tee -a $ALL | grep '^Total time: '
+	fi
 
 #	# end of out/down, say the 'down' statement
 #	case "`tail -n 2 $U`" in
@@ -134,6 +148,7 @@ show_running_time() {
 mk_float () { awk '{printf("%0.25f\n",$1)}'; }
 
 [ ! -f $INF ] && die "Cannot find input file:$INF"
+[ -n "$INF2" ] && [ ! -f "$INF2" ] && die "Cannot find second input file:$INF2"
 
 random_flip() # returns either 0 or 1
 {
@@ -145,7 +160,9 @@ random_flip() # returns either 0 or 1
     fi
 }
 
-if [ ! -z "$2" ]; then
+# Check if $2 is a file or a message
+if [ ! -z "$2" ] && [ ! -f "$2" ]; then
+    # If $2 is not a file, treat remaining args as a message
     shift
     msg="$@"
     _say -v en-m1 "hello, $msg"

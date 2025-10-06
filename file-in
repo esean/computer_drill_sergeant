@@ -1,0 +1,14 @@
+# COMMENTS are stripped
+# first sleep, then do thing
+randsmall,in!
+randsmall,in
+randsmall,wait
+rand,In!
+randsmall,WAIT...
+randsmall,Whip it around?
+randsmall,yeah Tug it around
+randsmall,in out
+randsmall,deeper
+randsmall,hold
+randsmall,Whip? it around
+# always end on down, first on up
