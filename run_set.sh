@@ -168,8 +168,8 @@ rest_set() {
 #----------
 # $1 = voice
 show_running_time() {
-	now_tm=`date +%s`
-	del_tm="`echo "$now_tm-$start_tm" | bc -l`"
+	now_tm=$(date +%s)
+	del_tm=$(echo "$now_tm-$start_tm" | bc -l)
 	echo "Running time: $del_tm sec"
     #_say -v $1 "in $del_tm seconds"
 }
@@ -208,14 +208,14 @@ fi
 
 _say "Welcome everyone, please find a seat"
 for voice in $VOICEs; do
-    if `random_flip`; then
-        if `random_flip`; then
+    if random_flip; then
+        if random_flip; then
             _say -v "$voice" "hi" &
         else
             _say -v "$voice" "bonjour" &
         fi
     else
-        if `random_flip`; then
+        if random_flip; then
             _say -v "$voice" "hello" &
         else
             _say -v "$voice" "good day" &
@@ -223,7 +223,7 @@ for voice in $VOICEs; do
     fi
     sleep 0.3
 done
-start_tm=`date +%s`
+start_tm=$(date +%s)
 sleep 2
 
 # $@ = voices
@@ -259,9 +259,9 @@ while :; do
 	done
     #wait_for_all_voices_to_complete $VOICEs
 
-	dur="`echo "$dur*$MULT" | bc -l | mk_float`"
-	MIN="`echo "$MIN*$MULT" | bc -l | mk_float`"
-	MAX="`echo "$MAX*$MULT" | bc -l | mk_float`"
+	dur=$(echo "$dur*$MULT" | bc -l | mk_float)
+	MIN=$(echo "$MIN*$MULT" | bc -l | mk_float)
+	MAX=$(echo "$MAX*$MULT" | bc -l | mk_float)
 
 	for voice in $VOICEs; do
         rm -f /tmp/done_file-${voice}

@@ -2,12 +2,14 @@
 
 SENT="$@"
 
-echo "$SENT" > x
-> y
+tmpx=$(mktemp /tmp/repeat_sentance_x.XXXXXXXXX)
+tmpy=$(mktemp /tmp/repeat_sentance_y.XXXXXXXXX)
+trap 'rm -f "$tmpx" "$tmpy"' EXIT
+
+echo "$SENT" > "$tmpx"
 
 while read ln; do
+    echo "$ln" | tr ' ' '\n' | xargs -I '{}' echo randsmall,{} >> "$tmpy"
+done < "$tmpx"
 
-    echo "$ln" | tr ' ' '\n'| tee dbg | xargs -i echo randsmall,{} >> y
-done < x
-
-#./run_set.sh x
+#./run_set.sh "$tmpy"
